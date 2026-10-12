@@ -1,6 +1,13 @@
 class Universidad {
   var provincia
   var honorarios
+  var donacionesTotales = 0
+method totalDonaciones() = donacionesTotales
+
+  method recibirDonacion(unMonto) {
+    donacionesTotales = donacionesTotales  + unMonto 
+  }
+
 
   method provinciaActual() = provincia
   method honorariosActuales() = honorarios
@@ -15,6 +22,7 @@ class Universidad {
 }
 
 class Profesional {
+
   var universidadEnQueEstudiaron
 
   method universidadEnQueEstudiaron() = universidadEnQueEstudiaron
@@ -25,27 +33,61 @@ class Profesional {
 
   method honorarios()
   method provinciasQuePuedeTrabajar()
+  method cobrar(unImporte)
+
+
 }
 
 class ProfesionalVinculado inherits Profesional {
   override method honorarios() = universidadEnQueEstudiaron.honorariosActuales()
   override method provinciasQuePuedeTrabajar() = [universidadEnQueEstudiaron.provinciaActual()]
+  override method cobrar(unImporte){
+    universidadEnQueEstudiaron.recibirDonacion(unImporte / 2)
+
+  }
+
+
+
+
 }
 
 class ProfesionalDelLitoral inherits Profesional {
   override method honorarios() = 3000
   override method provinciasQuePuedeTrabajar() = ["Entre Ríos", "Santa Fe", "Corrientes"]
+  override method cobrar(unImporte){
+    asociacionDeProfesionalesDelLitoral.recibirDonacion(unImporte)
+
+  }
+
+
 }
 
 class ProfesionalLibre inherits Profesional {
   var honorarios = 0
   const provincias = []
+  var totalRecaudado = 0
 
   override method honorarios() = honorarios
   method cambiarHonorarios(unValor) { honorarios = unValor }
 
   override method provinciasQuePuedeTrabajar() = provincias
   method agregarProvincia(unaProvincia) { provincias.add(unaProvincia) }
+
+  method totalRecaudado() = totalRecaudado
+
+  override method cobrar(unImporte){
+    totalRecaudado = totalRecaudado + unImporte
+
+  }
+
+  method pasarDinero(otroProfesional, cantidad) {
+     totalRecaudado -= cantidad
+     otroProfesional.cobrar(cantidad)
+
+    
+  }
+
+
 }
 
 
@@ -124,4 +166,16 @@ method puedeSerAtendidoPor(unProfesional) =
   provincias.any({ p => unProfesional.provinciasQuePuedeTrabajar().contains(p) })
 
 
+}
+
+
+object asociacionDeProfesionalesDelLitoral{
+
+  var totalRecaudado = 0
+  method totalDonaciones() = totalRecaudado
+
+  method recibirDonacion(unMonto) {
+    totalRecaudado = totalRecaudado  + unMonto 
+  }
+  
 }
